@@ -90,7 +90,7 @@ int set_title;
 #define WIDTH	256				/* default width */
 #define HEIGHT	256				/* default height */
 
-#define MAG		2				/* default magnification */
+#define MAG		1				/* default magnification */
 #define MAGX	MAG				/* horizontal magnification */
 #define MAGY	MAG				/* vertical magnification */
 
@@ -125,8 +125,8 @@ int created_images = False;
 #define NDELAYS 5
 
 int delays[NDELAYS] = { 200000, 100000, 50000, 10000, 0 };
-int delay_index = 0;
-int delay = 200000;			/* 0.2 second between updates */
+int delay_index = 4;
+int delay = 0;			/* 0 seconds between updates */
 
 void
 timeout_func(int signum) {
