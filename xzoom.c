@@ -95,6 +95,7 @@ int set_title;
 #define MAGY	MAG				/* vertical magnification */
 
 #define CURSOR_RADIUS 5  /* magnifier cursor radius */
+int cursor_radius = CURSOR_RADIUS;
 int xgrab, ygrab;				/* where do we take the picture from */
 
 int magx = MAGX;
@@ -340,6 +341,7 @@ int
 main(int argc, char **argv) {
 	int follow_mouse = False;
 	int show_cursor = True;
+	int buttons_pressed;
 	int number_of_screens;
 	int i;
 	Bool result;
@@ -671,6 +673,7 @@ main(int argc, char **argv) {
 				xgrab = root_x - width[SRC]/2;
 				ygrab = root_y - height[SRC]/2;
 			}
+			buttons_pressed = (mask_return >> 8) & 0b111; // 2/3/1
 		}
 		/*****
 		old event loop updated to support WM messages
@@ -945,17 +948,30 @@ main(int argc, char **argv) {
 			int cursor2x = ( root_x - xgrab ) * magx;
 			int cursor2y = ( root_y - ygrab ) * magy;
 
-			if (cursor2x < CURSOR_RADIUS) cursor2x = CURSOR_RADIUS;
-			if (cursor2y < CURSOR_RADIUS) cursor2y = CURSOR_RADIUS;
+			if (buttons_pressed){
+				cursor_radius = CURSOR_RADIUS * 2;
+			} else {
+				cursor_radius = CURSOR_RADIUS;
+			}
 
-			if (cursor2x > ximage[DST]->width) cursor2x = ximage[DST]->width - CURSOR_RADIUS;
-			if (cursor2y > ximage[DST]->width) cursor2y = ximage[DST]->height - CURSOR_RADIUS;
+			if (cursor2x < cursor_radius) cursor2x = cursor_radius;
+			if (cursor2y < cursor_radius) cursor2y = cursor_radius;
 
-			for (int x = cursor2x - CURSOR_RADIUS; x < cursor2x + CURSOR_RADIUS && x < ximage[DST]->width; x++) {
-				for (int y = cursor2y - CURSOR_RADIUS ; y < cursor2y + CURSOR_RADIUS && y < ximage[DST]->height; y++) {
-					// Invert the color of each pixel
-					pixel = XGetPixel(ximage[DST], x, y);
-					XPutPixel(ximage[DST], x, y, ~pixel);
+			if (cursor2x > ximage[DST]->width) cursor2x = ximage[DST]->width - cursor_radius;
+			if (cursor2y > ximage[DST]->width) cursor2y = ximage[DST]->height - cursor_radius;
+
+			for (int x = cursor2x - cursor_radius; x < cursor2x + cursor_radius && x < ximage[DST]->width; x++) {
+				for (int y = cursor2y - cursor_radius ; y < cursor2y + cursor_radius && y < ximage[DST]->height; y++) {
+					if (buttons_pressed){
+					    long color = ((buttons_pressed & 0b001) >> 0) * 0xff0000 |
+						         ((buttons_pressed & 0b010) >> 1) * 0x00ff00 |
+						         ((buttons_pressed & 0b100) >> 2) * 0x0000ff; 
+					    XPutPixel(ximage[DST], x, y, color);
+					} else {
+						// Invert the color of each pixel
+						pixel = XGetPixel(ximage[DST], x, y);
+						XPutPixel(ximage[DST], x, y, ~pixel);
+					}
 				}
 			}
 
