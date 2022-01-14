@@ -34,6 +34,11 @@ Carlos Pantelides       * 2020/04/01
                             https://github.com/mbarakatt/xzoom-follow-mouse
                             with modifications to allow turning this feature ON and OFF
                           Added show cursor in magnifier, do not works with rotations
+Raphael Wimmer            2022/01/15 <raphael.wimmer@ur.de>
+                          Cursor changes color if a mouse button is pressed.
+			  Default values changed to no zoom and no delay. 
+			  This makes xzoom suitable as a simple screen mirroring tool
+			  for live presentations.
 */
 #include <assert.h>
 #include <unistd.h>
