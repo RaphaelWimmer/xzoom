@@ -599,11 +599,22 @@ main(int argc, char **argv) {
 			PropModeReplace,
 			(unsigned char *)progname, strlen(progname));
 
-	/*
+	
 	XChangeProperty(dpy, win, XA_WM_NAME, XA_STRING, 8,
 			PropModeReplace,
 			(unsigned char *)progname, strlen(progname));
-	*/
+	
+	XStoreName(dpy, win, progname);
+
+	XClassHint* classHint;
+	classHint = XAllocClassHint();
+	if (classHint) {
+        	classHint->res_name = progname;
+	        classHint->res_class = "xzoom";
+		XSetClassHint(dpy, win, classHint);
+    	}
+        XFree(classHint);
+
 
 
  	/***	20020213
